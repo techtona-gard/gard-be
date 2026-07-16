@@ -38,7 +38,7 @@ export const getUserById = async (req, res, next) => {
 // POST /api/users
 export const createUser = async (req, res, next) => {
   try {
-    const { user_id, role_id, tinggi_badan, berat_badan, tanggal_lahir } = req.body;
+    const { user_id, role_id, tinggi_badan, berat_badan, tanggal_lahir, no_wa_darurat, status_gerd } = req.body;
 
     if (!user_id) {
       const error = new Error('user_id wajib diisi');
@@ -52,6 +52,8 @@ export const createUser = async (req, res, next) => {
       tinggi_badan: tinggi_badan ? parseInt(tinggi_badan) : null,
       berat_badan: berat_badan ? parseFloat(berat_badan) : null,
       tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null,
+      no_wa_darurat: no_wa_darurat || null,
+      status_gerd: status_gerd || null,
     });
 
     res.status(201).json({
@@ -73,13 +75,15 @@ export const createUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { role_id, tinggi_badan, berat_badan, tanggal_lahir } = req.body;
+    const { role_id, tinggi_badan, berat_badan, tanggal_lahir, no_wa_darurat, status_gerd } = req.body;
 
     const user = await UserModel.update(id, {
       ...(role_id !== undefined && { role_id: role_id ? parseInt(role_id) : null }),
       ...(tinggi_badan !== undefined && { tinggi_badan: tinggi_badan ? parseInt(tinggi_badan) : null }),
       ...(berat_badan !== undefined && { berat_badan: berat_badan ? parseFloat(berat_badan) : null }),
       ...(tanggal_lahir !== undefined && { tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null }),
+      ...(no_wa_darurat !== undefined && { no_wa_darurat: no_wa_darurat || null }),
+      ...(status_gerd !== undefined && { status_gerd: status_gerd || null }),
     });
 
     res.status(200).json({

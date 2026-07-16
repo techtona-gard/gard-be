@@ -22,8 +22,11 @@ export const getMedicalGuidelines = async (req, res, next) => {
     }
 
     // 1. Generate embedding using Gemini
-    const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-    const result = await model.embedContent(query);
+    const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
+    const result = await model.embedContent({
+      content: { parts: [{ text: query }] },
+      outputDimensionality: 768,
+    });
     const embedding = result.embedding.values; // Array 768 dimensi
 
     // 2. Call RPC match_medical_guidelines
