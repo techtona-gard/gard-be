@@ -1,14 +1,29 @@
-import { app } from './app.js';
-import { config } from './config/env.js';
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { userRouter } from './routes/user.route.js';
 
-const server = app.listen(config.port, () => {
-  console.log(`[Server] running in ${config.env} mode on port ${config.port}`);
+const app = express();
+
+// Port configuration
+const env = process.env.NODE_ENV || 'development';
+const hostName = process.env.HOST_NAME || 'localhost';
+const port = parseInt(process.env.PORT || '3000', 10);
+
+// CORS Configuration
+app.use(cors());
+
+// JSON Configuration
+app.use(express.json());
+
+// API Routes
+app.use('/api/users', userRouter);
+
+app.get('/', (req, res) => {
+  res.send('Welcome to Gard Backend!');
 });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error('[Unhandled Rejection] Shutting down...', err);
-  server.close(() => {
-    process.exit(1);
-  });
+// Listening to the port
+app.listen(port, hostName, () => {
+  console.log(`[Server] running in ${env} mode on http://${hostName}:${port}`);
 });
