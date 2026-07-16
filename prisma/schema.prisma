@@ -38,8 +38,8 @@ model users {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model medical_guidelines {
-  medical_guideline_id String                      @id
-  content              String
-  metadata             Json?
-  embedding            Unsupported("vector(768)")?
+  id        String                      @id
+  content   String
+  metadata  Json?
+  embedding Unsupported("vector(768)")?
 }
