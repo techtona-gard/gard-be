@@ -1,12 +1,9 @@
-import { prisma } from '../config/database.js';
+import { UserModel } from '../models/user.model.js';
 
 // GET /api/users
 export const getAllUsers = async (req, res, next) => {
   try {
-    const users = await prisma.users.findMany({
-      orderBy: { created_at: 'desc' },
-      include: { roles: true },
-    });
+    const users = await UserModel.findAll();
     res.status(200).json({
       status: 'success',
       data: users,
@@ -21,10 +18,7 @@ export const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const user = await prisma.users.findUnique({
-      where: { user_id: id },
-      include: { roles: true },
-    });
+    const user = await UserModel.findById(id);
 
     if (!user) {
       const error = new Error('User tidak ditemukan');
@@ -52,14 +46,12 @@ export const createUser = async (req, res, next) => {
       return next(error);
     }
 
-    const user = await prisma.users.create({
-      data: {
-        user_id,
-        role_id: role_id ? parseInt(role_id) : null,
-        tinggi_badan: tinggi_badan ? parseInt(tinggi_badan) : null,
-        berat_badan: berat_badan ? parseFloat(berat_badan) : null,
-        tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null,
-      },
+    const user = await UserModel.create({
+      user_id,
+      role_id: role_id ? parseInt(role_id) : null,
+      tinggi_badan: tinggi_badan ? parseInt(tinggi_badan) : null,
+      berat_badan: berat_badan ? parseFloat(berat_badan) : null,
+      tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null,
     });
 
     res.status(201).json({
@@ -83,14 +75,11 @@ export const updateUser = async (req, res, next) => {
     const { id } = req.params;
     const { role_id, tinggi_badan, berat_badan, tanggal_lahir } = req.body;
 
-    const user = await prisma.users.update({
-      where: { user_id: id },
-      data: {
-        ...(role_id !== undefined && { role_id: role_id ? parseInt(role_id) : null }),
-        ...(tinggi_badan !== undefined && { tinggi_badan: tinggi_badan ? parseInt(tinggi_badan) : null }),
-        ...(berat_badan !== undefined && { berat_badan: berat_badan ? parseFloat(berat_badan) : null }),
-        ...(tanggal_lahir !== undefined && { tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null }),
-      },
+    const user = await UserModel.update(id, {
+      ...(role_id !== undefined && { role_id: role_id ? parseInt(role_id) : null }),
+      ...(tinggi_badan !== undefined && { tinggi_badan: tinggi_badan ? parseInt(tinggi_badan) : null }),
+      ...(berat_badan !== undefined && { berat_badan: berat_badan ? parseFloat(berat_badan) : null }),
+      ...(tanggal_lahir !== undefined && { tanggal_lahir: tanggal_lahir ? new Date(tanggal_lahir) : null }),
     });
 
     res.status(200).json({
@@ -112,9 +101,7 @@ export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    await prisma.users.delete({
-      where: { user_id: id },
-    });
+    await UserModel.delete(id);
 
     res.status(200).json({
       status: 'success',

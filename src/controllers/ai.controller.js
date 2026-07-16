@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { prisma } from '../config/database.js';
+import { MedicalGuidelineModel } from '../models/medical-guideline.model.js';
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const genAI = geminiApiKey ? new GoogleGenerativeAI(geminiApiKey) : null;
@@ -26,19 +26,12 @@ export const getMedicalGuidelines = async (req, res, next) => {
     const result = await model.embedContent(query);
     const embedding = result.embedding.values; // Array 768 dimensi
 
-    // 2. Call RPC match_medical_guidelines using raw SQL query (to support vector parsing)
+    // 2. Call RPC match_medical_guidelines
     const limitInt = parseInt(limit, 10) || 2;
     const embeddingString = `[${embedding.join(',')}]`;
 
     // match_threshold set to 0.0 to fetch best matches based on limit
-    const matchedGuidelines = await prisma.$queryRaw`
-      SELECT id, content, metadata, similarity 
-      FROM match_medical_guidelines(
-        ${embeddingString}::vector, 
-        0.0::double precision, 
-        ${limitInt}::integer
-      )
-    `;
+    const matchedGuidelines = await MedicalGuidelineModel.matchGuidelines(embeddingString, limitInt);
 
     // 3. Return array of content strings
     const contentStrings = matchedGuidelines.map((g) => g.content);
@@ -63,34 +56,8 @@ export const bulkIngestGuidelines = async (req, res, next) => {
       return next(error);
     }
 
-    // Perform upsert using transaction to ensure all inserts succeed together
-    await prisma.$transaction(
-      records.map((record) => {
-        const { id, content, metadata, embedding } = record;
-
-        if (!id || !content || !embedding || !Array.isArray(embedding)) {
-          throw new Error(`Record dengan ID "${id || 'unknown'}" memiliki format data yang tidak lengkap.`);
-        }
-
-        const embeddingString = `[${embedding.join(',')}]`;
-        const metadataString = metadata ? JSON.stringify(metadata) : null;
-
-        // Using raw SQL execute to support PgVector input since Prisma does not natively support the vector type
-        return prisma.$executeRaw`
-          INSERT INTO medical_guidelines (id, content, metadata, embedding)
-          VALUES (
-            ${id}, 
-            ${content}, 
-            ${metadataString ? JSON.parse(metadataString) : null}::jsonb, 
-            ${embeddingString}::vector
-          )
-          ON CONFLICT (id) DO UPDATE SET
-            content = EXCLUDED.content,
-            metadata = EXCLUDED.metadata,
-            embedding = EXCLUDED.embedding
-        `;
-      })
-    );
+    // Perform upsert using Model
+    await MedicalGuidelineModel.bulkUpsertGuidelines(records);
 
     res.status(200).json({
       status: 'success',
