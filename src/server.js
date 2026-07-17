@@ -4,6 +4,7 @@ import cors from 'cors';
 import { userRouter } from './routes/user.route.js';
 import { aiRouter } from './routes/ai.route.js';
 import { historyRouter } from './routes/history.route.js';
+import { lifestyleRouter } from './routes/lifestyle.route.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/histories', historyRouter);
+app.use('/api/v1/lifestyles', lifestyleRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Gard Backend!');
