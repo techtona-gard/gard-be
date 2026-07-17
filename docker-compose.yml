@@ -2,11 +2,11 @@ services:
   api:
     build: .
     ports:
-      - '${PORT}:${PORT}'
+      - '3000:3000'
     environment:
       - PORT=${PORT}
       - NODE_ENV=${NODE_ENV}
-      - HOST_NAME=${HOSTNAME}
+      - HOST_NAME=0.0.0.0
       - DATABASE_URL=${DATABASE_URL}
       - DIRECT_URL=${DIRECT_URL}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
