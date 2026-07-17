@@ -5,6 +5,7 @@ import { userRouter } from './routes/user.route.js';
 import { aiRouter } from './routes/ai.route.js';
 import { historyRouter } from './routes/history.route.js';
 import { lifestyleRouter } from './routes/lifestyle.route.js';
+import { chatRouter } from './routes/chat.route.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/histories', historyRouter);
 app.use('/api/v1/lifestyles', lifestyleRouter);
+app.use('/api/v1/chat', chatRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Gard Backend!');
