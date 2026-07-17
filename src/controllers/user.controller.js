@@ -67,6 +67,11 @@ export const createUser = async (req, res, next) => {
       error.statusCode = 409;
       return next(error);
     }
+    if (err.code === 'P2003') {
+      const error = new Error('Role ID yang dimasukkan tidak valid');
+      error.statusCode = 400;
+      return next(error);
+    }
     next(err);
   }
 };
@@ -94,6 +99,11 @@ export const updateUser = async (req, res, next) => {
     if (err.code === 'P2025') {
       const error = new Error('User tidak ditemukan');
       error.statusCode = 404;
+      return next(error);
+    }
+    if (err.code === 'P2003') {
+      const error = new Error('Role ID yang dimasukkan tidak valid');
+      error.statusCode = 400;
       return next(error);
     }
     next(err);

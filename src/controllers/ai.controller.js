@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MedicalGuidelineModel } from '../models/medical-guideline.model.js';
+import 'dotenv/config';
 
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const genAI = geminiApiKey ? new GoogleGenerativeAI(geminiApiKey) : null;
@@ -34,7 +35,10 @@ export const getMedicalGuidelines = async (req, res, next) => {
     const embeddingString = `[${embedding.join(',')}]`;
 
     // match_threshold set to 0.0 to fetch best matches based on limit
-    const matchedGuidelines = await MedicalGuidelineModel.matchGuidelines(embeddingString, limitInt);
+    const matchedGuidelines = await MedicalGuidelineModel.matchGuidelines(
+      embeddingString,
+      limitInt,
+    );
 
     // 3. Return array of content strings
     const contentStrings = matchedGuidelines.map((g) => g.content);

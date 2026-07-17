@@ -11,16 +11,16 @@ async function main() {
   console.log('🌱 Seeding roles...');
 
   const roles = [
-    { id: 1, name: 'user', description: 'User biasa' },
-    { id: 2, name: 'verifier', description: 'Verifier' },
-    { id: 3, name: 'doctor', description: 'Dokter' },
+    { role_id: 1, name: 'user' },
+    { role_id: 2, name: 'verifier' },
+    { role_id: 3, name: 'doctor' },
   ];
 
   for (const role of roles) {
     await prisma.roles.upsert({
-      where: { id: role.id },
-      update: { name: role.name, description: role.description },
-      create: { id: role.id, name: role.name, description: role.description },
+      where: { role_id: role.role_id },
+      update: { name: role.name },
+      create: { role_id: role.role_id, name: role.name },
     });
     console.log(`  ✅ Role "${role.name}" seeded`);
   }
