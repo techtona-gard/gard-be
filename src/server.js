@@ -6,6 +6,8 @@ import { aiRouter } from './routes/ai.route.js';
 import { historyRouter } from './routes/history.route.js';
 import { lifestyleRouter } from './routes/lifestyle.route.js';
 import { chatRouter } from './routes/chat.route.js';
+import { scanFoodRouter } from './routes/scan-food.route.js';
+import { scheduleRouter } from './routes/schedule.route.js';
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/histories', historyRouter);
 app.use('/api/v1/lifestyles', lifestyleRouter);
 app.use('/api/v1/chat', chatRouter);
+app.use('/api/v1/scan-food', scanFoodRouter);
+app.use('/api/v1/schedule', scheduleRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Gard Backend!');
